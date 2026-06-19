@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block titulo %}Vittorio Coffee · Café de especialidad en Tomé{% endblock %}
+
+{% block main %}
+<!-- ═══════════ HERO ═══════════ -->
+<section class="home-hero">
+    <div class="hero">
+        <h1 class="phrase phrase--top">La vida comienza</h1>
+        <div class="hero-cup">☕</div>
+        <p class="phrase phrase--bottom">con un buen café.</p>
+
+        <p class="hero-brand">Vittorio Coffee</p>
+        <p class="hero-caption">specialty roaster coffee · since 2017</p>
+        <a href="{% url 'tienda:catalogo' %}" class="hero-cta">Ver el menú →</a>
+    </div>
+
+    <a class="hero-scroll-cue" href="#quienes-somos" aria-label="Bajar">
+        <span>scroll</span>
+        <svg viewBox="0 0 16 24" width="14" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M8 4 V20 M3 15 L8 20 L13 15" />
+        </svg>
+    </a>
+</section>
+
+<!-- Transición tipo "café que se sirve" -->
+<div class="brew brew--main" aria-hidden="true"></div>
+
+<!-- ═══════════ QUIÉNES SOMOS ═══════════ -->
+<section class="home-section" id="quienes-somos">
+    <div class="section-inner">
+        <p class="section-eyebrow">Quiénes somos</p>
+        <h2 class="section-title">Una familia detrás <em>de cada taza.</em></h2>
+        <div class="about-text">
+            <p>
+                Vittorio nació en 2017 en Tomé, cuando decidimos abrir un espacio donde el café
+                de especialidad fuera para todos, no para pocos.
+            </p>
+            <p>
+                Tostamos en lotes pequeños, cuidando origen, método y momento. Detrás del mostrador
+                hay una familia que cree que un buen café cambia el día — y que ese día empieza
+                acá, en Galería Kepler.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ VISÍTANOS ═══════════ -->
+<section class="home-section" id="visitanos">
+    <div class="section-inner section-inner--center">
+        <h2 class="section-title">Visítanos</h2>
+        <span class="visit-rule" aria-hidden="true"></span>
+    </div>
+    <div class="visit-map">
+        <iframe
+            src="https://maps.google.com/maps?q=Galer%C3%ADa+Kepler,+Tom%C3%A9,+Chile&t=&z=17&ie=UTF8&iwloc=&output=embed"
+            title="Ubicación de Vittorio Coffee · Galería Kepler, Tomé"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    </div>
+</section>
+
+<!-- ═══════════ INSTAGRAM ═══════════ -->
+<section class="home-section home-instagram" id="instagram">
+    <div class="section-inner section-inner--center">
+        <p class="section-eyebrow">Síguenos</p>
+        <h2 class="section-title section-title--ig">@vittoriocoffee</h2>
+        <p class="ig-line">Lo último: preparaciones del día, tostados nuevos y todo lo que pasa adentro del local.</p>
+        <a class="ig-cta" href="https://www.instagram.com/vittoriocoffee/" target="_blank" rel="noopener">Abrir Instagram →</a>
+    </div>
+</section>
+{% endblock %}

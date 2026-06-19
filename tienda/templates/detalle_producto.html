@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ producto.nombre }} · Vittorio Coffee{% endblock %}
+
+{% block contenido %}
+<a href="{% url 'tienda:catalogo' %}" class="text-decoration-none">&larr; Volver al catálogo</a>
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        {% if producto.imagen %}
+            <img src="{{ producto.imagen.url }}" class="img-fluid rounded" alt="{{ producto.nombre }}">
+        {% else %}
+            <div class="bg-secondary-subtle rounded d-flex align-items-center justify-content-center" style="height:300px;">
+                <span class="text-muted">Sin imagen</span>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <p class="text-muted">{{ producto.categoria.nombre }}</p>
+        <h1 class="producto-nombre">{{ producto.nombre }}</h1>
+        <p class="producto-precio h3 mb-3">${{ producto.precio }}</p>
+        <p>{{ producto.descripcion }}</p>
+        {% if producto.disponible %}
+            <a href="{% url 'tienda:agregar_al_carrito' producto.id %}" class="btn btn-primary btn-lg">Agregar al carrito</a>
+        {% else %}
+            <span class="badge bg-secondary fs-6">No disponible</span>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

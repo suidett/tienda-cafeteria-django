@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block titulo %}Carta · Vittorio Coffee{% endblock %}
+
+{% block contenido %}
+<p class="section-eyebrow">Specialty roaster · since 2017</p>
+<h1 class="carta-title">Carta</h1>
+
+<div class="row g-4">
+    <!-- ══════ Izquierda: categorías (columna vertical) ══════ -->
+    <div class="col-lg-3">
+        <nav class="cat-nav">
+            <a href="{% url 'tienda:catalogo' %}"
+               class="cat-nav__item {% if not categoria_actual %}is-active{% endif %}">
+                <span class="cat-nav__num">00</span><span>Todos</span>
+            </a>
+            {% for c in categorias %}
+                <a href="?categoria={{ c.id }}"
+                   class="cat-nav__item {% if categoria_actual == c.id|stringformat:'s' %}is-active{% endif %}">
+                    <span class="cat-nav__num">0{{ forloop.counter }}</span><span>{{ c.nombre }}</span>
+                </a>
+            {% endfor %}
+        </nav>
+    </div>
+
+    <!-- ══════ Centro: productos ══════ -->
+    <div class="col-lg-6">
+        <div class="row g-3">
+            {% for producto in productos %}
+                <div class="col-sm-6">
+                    <article class="prod-card">
+                        <h2 class="prod-card__name">{{ producto.nombre }}</h2>
+                        <p class="prod-card__desc">{{ producto.descripcion|truncatechars:70 }}</p>
+                        <div class="prod-card__foot">
+                            <span class="prod-card__price">${{ producto.precio }}</span>
+                            <a href="{% url 'tienda:agregar_al_carrito' producto.id %}"
+                               class="btn btn-primary btn-sm">Agregar</a>
+                        </div>
+                    </article>
+                </div>
+            {% empty %}
+                <p class="text-muted">No hay productos disponibles{% if categoria_actual %} en esta categoría{% endif %}.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ══════ Derecha: "Tu pedido" ══════ -->
+    <div class="col-lg-3">
+        <aside class="cart-aside">
+            <h2 class="cart-aside__title">Tu pedido</h2>
+            {% if items %}
+                <ul class="cart-aside__list">
+                    {% for item in items %}
+                        <li>
+                            <div class="d-flex justify-content-between">
+                                <span>{{ item.cantidad }}× {{ item.producto.nombre }}</span>
+                                <span>${{ item.subtotal }}</span>
+                            </div>
+                            <a href="{% url 'tienda:quitar_del_carrito' item.producto.id %}" class="cart-aside__remove">quitar</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="cart-aside__total">
+                    <span>Total</span><strong>${{ total }}</strong>
+                </div>
+                <a href="{% url 'tienda:checkout' %}" class="btn btn-primary w-100">Finalizar compra</a>
+            {% else %}
+                <p class="cart-aside__empty">Tu carrito está vacío.<br>Agregá productos del menú →</p>
+            {% endif %}
+        </aside>
+    </div>
+</div>
+{% endblock %}

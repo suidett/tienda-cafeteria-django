@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block titulo %}Carrito · Vittorio Coffee{% endblock %}
+
+{% block contenido %}
+<h1 class="mb-4">Tu carrito</h1>
+
+{% if items %}
+<table class="table align-middle bg-white">
+    <thead>
+        <tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td class="producto-nombre">{{ item.producto.nombre }}</td>
+            <td>${{ item.producto.precio }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>${{ item.subtotal }}</td>
+            <td class="text-end">
+                <a href="{% url 'tienda:quitar_del_carrito' item.producto.id %}"
+                   class="btn btn-sm btn-outline-danger">Quitar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="3" class="text-end">Total</th>
+            <th class="producto-precio">${{ total }}</th>
+            <th></th>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="d-flex gap-2">
+    <a href="{% url 'tienda:catalogo' %}" class="btn btn-outline-secondary">Seguir comprando</a>
+    <a href="{% url 'tienda:checkout' %}" class="btn btn-primary">Finalizar compra</a>
+</div>
+{% else %}
+<p class="text-muted">Tu carrito está vacío. <a href="{% url 'tienda:catalogo' %}">Ver el catálogo</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block titulo %}Panel · Vittorio Coffee{% endblock %}
+
+{% block contenido %}
+<p class="section-eyebrow">Administración</p>
+<h1 class="panel-title">Panel</h1>
+
+<!-- Tarjetas con estadísticas -->
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-card__num">{{ total_pedidos }}</div>
+        <div class="stat-card__label">Pedidos</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__num">{{ ventas_hoy }}</div>
+        <div class="stat-card__label">Ventas hoy</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__num">{{ pedidos_pendientes }}</div>
+        <div class="stat-card__label">Pendientes</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__num">{{ total_productos }}</div>
+        <div class="stat-card__label">Productos</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__num">{{ total_categorias }}</div>
+        <div class="stat-card__label">Categorías</div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <!-- Ventas por día -->
+    <div class="col-lg-7">
+        <h2 class="panel-section-title">Ventas por día</h2>
+        <div class="ventas-dia">
+            {% for v in ventas_por_dia %}
+                <div class="ventas-dia__row">
+                    <span class="ventas-dia__fecha">{{ v.dia|date:"d/m" }}</span>
+                    <div class="ventas-dia__bar-track">
+                        <div class="ventas-dia__bar" style="width: {% widthratio v.cantidad max_ventas 100 %}%"></div>
+                    </div>
+                    <span class="ventas-dia__count">{{ v.cantidad }}</span>
+                </div>
+            {% empty %}
+                <p class="text-muted">Todavía no hay ventas registradas.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Accesos de gestión -->
+    <div class="col-lg-5">
+        <h2 class="panel-section-title">Gestión</h2>
+        <div class="d-flex flex-column gap-2">
+            <a href="{% url 'tienda:admin_productos' %}" class="btn btn-primary">Gestionar productos</a>
+            <a href="{% url 'tienda:admin_categorias' %}" class="btn btn-primary">Gestionar categorías</a>
+            <a href="{% url 'tienda:admin_pedidos' %}" class="btn btn-primary">Ver pedidos</a>
+        </div>
+    </div>
+</div>
+
+<!-- Últimos pedidos -->
+<h2 class="panel-section-title mt-5">Últimos pedidos</h2>
+<table class="table align-middle bg-white">
+    <thead>
+        <tr><th>#</th><th>Cliente</th><th>Estado</th><th>Fecha</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+        {% for pedido in ultimos_pedidos %}
+            <tr>
+                <td>{{ pedido.id }}</td>
+                <td>{{ pedido.usuario.username|default:"Invitado" }}</td>
+                <td>{{ pedido.get_estado_display }}</td>
+                <td>{{ pedido.creado|date:"d/m/Y H:i" }}</td>
+                <td class="producto-precio">${{ pedido.total }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No hay pedidos todavía.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
