@@ -1,9 +1,10 @@
 # Entorno virtual (NO se sube)
 venv/
 
-# Carpeta de Claude y ayuda de estudio (NO van al repo)
+# Carpeta de Claude y ayudas de estudio (NO van al repo)
 .claude/
 DEFENSA.md
+COMANDOS.md
 
 # Python
 __pycache__/
