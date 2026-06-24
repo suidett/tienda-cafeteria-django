@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block titulo %}Eliminar usuario · Panel{% endblock %}
+
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h1 class="h4 mb-3">¿Eliminar este usuario?</h1>
+            <p>Estás por eliminar a <strong>{{ usuario.username }}</strong>.
+               Sus pedidos quedarán registrados como "Invitado". Esta acción no se puede deshacer.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                    <a href="{% url 'tienda:admin_usuarios' %}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

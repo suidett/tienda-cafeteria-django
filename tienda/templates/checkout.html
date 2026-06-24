@@ -1,52 +1,58 @@
 {% extends "base.html" %}
 
-{% block titulo %}Confirmar pedido · Vittorio Coffee{% endblock %}
+{% block titulo %}Tu pedido · Vittorio Coffee{% endblock %}
 
 {% block contenido %}
-<h1 class="mb-4">Confirmar pedido</h1>
+<div class="checkout-wrap">
+    <h1 class="checkout-title">Tu pedido</h1>
 
-{% if not user.is_authenticated %}
-<div class="alert" style="background:var(--cream-light);border:1px solid var(--cream-warm);color:var(--coffee-dark);">
-    ¿Tenés cuenta? <a href="{% url 'tienda:login' %}">Ingresá</a> para guardar tu pedido y verlo en "Mis pedidos" — o seguí como invitado. 👇
-</div>
-{% endif %}
+    {% if not user.is_authenticated %}
+        <p class="checkout-guest">
+            ¿Tenés cuenta? <a href="{% url 'tienda:login' %}">Ingresá</a> para guardar tu pedido en "Mis pedidos", o seguí como invitado.
+        </p>
+    {% endif %}
 
-<div class="row g-4">
-    <div class="col-md-7">
-        <div class="card p-4">
-            <h2 class="h5 mb-3">Datos de entrega</h2>
-            <form method="post" class="form-render">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="mb-3">
-                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.errors %}
-                            <div class="text-danger small">{{ field.errors|striptags }}</div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                <button type="submit" class="btn btn-primary">Realizar pedido</button>
-            </form>
-        </div>
+    <ul class="checkout-items">
+        {% for item in items %}
+            <li class="checkout-item">
+                <div class="checkout-item__info">
+                    <span class="checkout-item__name">{{ item.producto.nombre }}</span>
+                    <span class="checkout-item__qty">{{ item.cantidad }} × ${{ item.producto.precio }}</span>
+                </div>
+                <span class="checkout-item__price">${{ item.subtotal }}</span>
+                <a href="{% url 'tienda:quitar_del_carrito' item.producto.id %}" class="checkout-item__remove" aria-label="Quitar {{ item.producto.nombre }}">&times;</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="checkout-total">
+        <span>Total</span>
+        <strong>${{ total }}</strong>
     </div>
-    <div class="col-md-5">
-        <div class="card p-4">
-            <h2 class="h5 mb-3">Resumen</h2>
-            <ul class="list-unstyled mb-2">
-                {% for item in items %}
-                    <li class="d-flex justify-content-between">
-                        <span>{{ item.cantidad }}× {{ item.producto.nombre }}</span>
-                        <span>${{ item.subtotal }}</span>
-                    </li>
-                {% endfor %}
-            </ul>
-            <hr>
-            <div class="d-flex justify-content-between fw-bold">
-                <span>Total</span>
-                <span class="producto-precio">${{ total }}</span>
+
+    <form method="post" class="form-render checkout-form">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="checkout-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="checkout-error">{{ field.errors|striptags }}</div>
+                {% endif %}
             </div>
-        </div>
-    </div>
+        {% endfor %}
+
+        <button type="submit" name="modo_pago" value="online" class="checkout-btn checkout-btn--pay">
+            Pagar ahora con Mercado Pago
+        </button>
+        <button type="submit" name="modo_pago" value="local" class="checkout-btn checkout-btn--reserve">
+            Reservar · pago al retirar
+        </button>
+    </form>
+
+    <p class="checkout-note">
+        <em>Pagar ahora:</em> con Mercado Pago (pago simulado en esta demo).<br>
+        <em>Reservar:</em> reservás ahora y pagás cuando retirás en el local.
+    </p>
 </div>
 {% endblock %}

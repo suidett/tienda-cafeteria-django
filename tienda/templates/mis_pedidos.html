@@ -3,27 +3,52 @@
 {% block titulo %}Mis pedidos · Vittorio Coffee{% endblock %}
 
 {% block contenido %}
-<h1 class="mb-4">Mis pedidos</h1>
+<div class="pedidos-wrap">
+    <p class="section-eyebrow">Tu historial</p>
+    <h1 class="pedidos-title">Mis pedidos</h1>
 
-{% for pedido in pedidos %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2 class="h5 mb-1">Pedido #{{ pedido.id }}</h2>
-                <span class="badge bg-secondary">{{ pedido.get_estado_display }}</span>
-            </div>
-            <p class="text-muted small mb-2">
-                {{ pedido.creado|date:"d/m/Y H:i" }} · {{ pedido.get_tipo_entrega_display }}
-            </p>
-            <ul class="mb-2">
+    {% for pedido in pedidos %}
+        <article class="pedido-card">
+            <header class="pedido-card__head">
+                <div>
+                    <h2 class="pedido-card__id">Pedido #{{ pedido.id }}</h2>
+                    <p class="pedido-card__date">{{ pedido.creado|date:"d/m/Y · H:i" }}</p>
+                </div>
+                <span class="estado-badge estado-badge--{{ pedido.estado }}">{{ pedido.get_estado_display }}</span>
+            </header>
+
+            <ul class="pedido-card__items">
                 {% for d in pedido.detalles.all %}
-                    <li>{{ d.cantidad }}× {{ d.producto.nombre }} — ${{ d.subtotal }}</li>
+                    <li>
+                        <span class="pedido-card__qty">{{ d.cantidad }}×</span>
+                        <span class="pedido-card__name">{{ d.producto.nombre }}</span>
+                        <span class="pedido-card__price">${{ d.subtotal }}</span>
+                    </li>
                 {% endfor %}
             </ul>
-            <strong class="producto-precio">Total: ${{ pedido.total }}</strong>
+
+            <footer class="pedido-card__foot">
+                <div class="pedido-card__tags">
+                    {% if pedido.hora_retiro %}
+                        <span class="pedido-tag">Retiro · {{ pedido.hora_retiro }}</span>
+                    {% else %}
+                        <span class="pedido-tag">{{ pedido.get_tipo_entrega_display }}</span>
+                    {% endif %}
+                    <span class="pedido-tag pedido-tag--{{ pedido.modo_pago }}">
+                        {% if pedido.modo_pago == 'online' %}Pagado online{% else %}Pago al retirar{% endif %}
+                    </span>
+                </div>
+                <div class="pedido-card__total">
+                    <span>Total</span>
+                    <strong>${{ pedido.total }}</strong>
+                </div>
+            </footer>
+        </article>
+    {% empty %}
+        <div class="pedidos-empty">
+            <p>Todavía no hiciste ningún pedido.</p>
+            <a href="{% url 'tienda:catalogo' %}" class="btn btn-primary">Ver la carta</a>
         </div>
-    </div>
-{% empty %}
-    <p class="text-muted">Todavía no hiciste pedidos. <a href="{% url 'tienda:catalogo' %}">Ver el catálogo</a>.</p>
-{% endfor %}
+    {% endfor %}
+</div>
 {% endblock %}

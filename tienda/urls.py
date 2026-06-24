@@ -21,6 +21,7 @@ urlpatterns = [
     path("catalogo/", views.catalogo, name="catalogo"),
     path("producto/<int:pk>/", views.detalle_producto, name="detalle_producto"),
     path("registro/", views.registro, name="registro"),
+    path("recuperar/", views.recuperar_password, name="recuperar_password"),
     path("carrito/", views.ver_carrito, name="ver_carrito"),
     path("carrito/agregar/<int:pk>/", views.agregar_al_carrito, name="agregar_al_carrito"),
     path("carrito/quitar/<int:pk>/", views.quitar_del_carrito, name="quitar_del_carrito"),
@@ -32,4 +33,6 @@ urlpatterns = [
     path("panel/categorias/nueva/", views.crear_categoria, name="crear_categoria"),
     path("panel/categorias/<int:pk>/editar/", views.editar_categoria, name="editar_categoria"),
     path("panel/categorias/<int:pk>/eliminar/", views.eliminar_categoria, name="eliminar_categoria"),
+    path("panel/usuarios/", views.admin_usuarios, name="admin_usuarios"),
+    path("panel/usuarios/<int:pk>/eliminar/", views.eliminar_usuario, name="eliminar_usuario"),
 ]

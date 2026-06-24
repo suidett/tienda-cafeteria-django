@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages 
 from django.contrib.auth.decorators import user_passes_test, login_required
 from .models import Categoria, Producto, Pedido, DetallePedido
-from .forms import ProductoForm, CheckoutForm, CategoriaForm
+from .forms import ProductoForm, CheckoutForm, CategoriaForm, RecuperarPasswordForm
 from django.contrib.auth import login 
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.db.models import ProtectedError, Count
 from django.db.models.functions import TruncDate
 from django.utils import timezone
@@ -83,8 +83,11 @@ def editar_producto(request, pk):
 def eliminar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == "POST":
-        producto.delete()
-        messages.success(request, "Producto eliminado.")
+        try:
+            producto.delete()
+            messages.success(request, "Producto eliminado.")
+        except ProtectedError:
+            messages.error(request, "No se puede eliminar: el producto está en pedidos.")
         return redirect("tienda:admin_productos")
     return render(request, "eliminar_producto.html", {"producto": producto})
 
@@ -92,7 +95,7 @@ def catalogo(request):
     productos = Producto.objects.filter(disponible=True).select_related("categoria")
     categorias = Categoria.objects.filter(activa=True)
     categoria_id = request.GET.get("categoria")
-    if categoria_id:
+    if categoria_id and categoria_id.isdigit():
         productos = productos.filter(categoria_id=categoria_id)
     items, total = _items_carrito(request.session)
     return render(request, "catalogo.html", {
@@ -123,12 +126,31 @@ def registro(request):
     return render(request, "registro.html", {"form": form})
 
 
+def recuperar_password(request):
+    """Recuperación simulada: cambia la contraseña validando usuario + formato de email."""
+    if request.method == "POST":
+        form = RecuperarPasswordForm(request.POST)
+        if form.is_valid():
+            user = User.objects.get(username=form.cleaned_data["username"])
+            user.set_password(form.cleaned_data["password1"])
+            user.save()
+            messages.success(request, "¡Contraseña actualizada! Ya podés iniciar sesión.")
+            return redirect("tienda:login")
+    else:
+        form = RecuperarPasswordForm()
+    return render(request, "recuperar_password.html", {"form": form})
+
+
 def _items_carrito(session): 
     carrito= session.get("carrito", {})
-    items, total= [], 0 
+    if not isinstance(carrito, dict):
+        carrito = {}
+    items, total= [], 0
     for pid, cantidad in carrito.items(): 
-        producto = Producto.objects.filter(pk=pid).first()
-        if not producto: 
+        if not str(pid).isdigit():
+            continue
+        producto = Producto.objects.filter(pk=pid, disponible=True).first()
+        if not producto:
             continue
         subtotal = producto.precio * cantidad 
         total += subtotal 
@@ -139,12 +161,20 @@ def ver_carrito(request):
     items, total = _items_carrito(request.session)
     return render(request,"carrito.html",{"items": items, "total": total})
 
-def agregar_al_carrito(request,pk): 
+MAX_POR_PRODUCTO = 20
+
+def agregar_al_carrito(request,pk):
     producto =get_object_or_404(Producto, pk=pk)
+    if not producto.disponible:
+        messages.error(request, "Ese producto no está disponible.")
+        return redirect(request.META.get("HTTP_REFERER") or "tienda:catalogo")
     carrito = request.session.get("carrito", {})
     clave= str(pk)
-    carrito[clave]= carrito.get(clave,0)+1 
-    request.session["carrito"] = carrito 
+    if carrito.get(clave, 0) >= MAX_POR_PRODUCTO:
+        messages.error(request, f"Máximo {MAX_POR_PRODUCTO} unidades por producto.")
+        return redirect(request.META.get("HTTP_REFERER") or "tienda:catalogo")
+    carrito[clave]= carrito.get(clave,0)+1
+    request.session["carrito"] = carrito
     messages.success(request, f"{producto.nombre} agregado al carrito")
     return redirect(request.META.get("HTTP_REFERER") or "tienda:catalogo")
 
@@ -159,13 +189,15 @@ def checkout(request):
     if not items: 
         messages.error(request, "tu carrito esta vacío")
         return redirect("tienda:catalogo")
-    if request.method =="POST": 
+    if request.method =="POST":
         form = CheckoutForm(request.POST)
-        if form.is_valid(): 
+        if form.is_valid():
             pedido = form.save(commit=False)
             pedido.usuario = request.user if request.user.is_authenticated else None
+            modo = request.POST.get("modo_pago")
+            pedido.modo_pago = modo if modo in Pedido.ModoPago.values else Pedido.ModoPago.LOCAL
             pedido.save()
-            for item in items: 
+            for item in items:
                 DetallePedido.objects.create(
                     pedido=pedido,
                     producto=item["producto"],
@@ -174,7 +206,10 @@ def checkout(request):
 
                 )
             request.session["carrito"] = {}
-            messages.success(request,f"¡PEDIDO #{pedido.id} realizado con éxito!")
+            if pedido.modo_pago == Pedido.ModoPago.ONLINE:
+                messages.success(request, f"¡Pago confirmado! Pedido #{pedido.id} pagado online. ✅")
+            else:
+                messages.success(request, f"¡Pedido #{pedido.id} reservado! Pagás al retirar. ☕")
             return redirect("tienda:mis_pedidos" if request.user.is_authenticated else "tienda:inicio")
     else:
         form = CheckoutForm()
@@ -244,3 +279,26 @@ def eliminar_categoria(request, pk):
                 messages.error(request, "No se puede eliminar: categoria tiene productos")
             return redirect("tienda:admin_categorias")
     return render(request, "eliminar_categoria.html", {"categoria":categoria})
+
+
+@user_passes_test(es_admin, login_url="tienda:login")
+def admin_usuarios(request):
+    usuarios = User.objects.annotate(num_pedidos=Count("pedidos")).order_by("-date_joined")
+    return render(request, "admin_usuarios.html", {"usuarios": usuarios})
+
+
+@user_passes_test(es_admin, login_url="tienda:login")
+def eliminar_usuario(request, pk):
+    usuario = get_object_or_404(User, pk=pk)
+    if usuario == request.user:
+        messages.error(request, "No podés eliminar tu propia cuenta.")
+        return redirect("tienda:admin_usuarios")
+    if usuario.is_superuser:
+        messages.error(request, "No se puede eliminar a un superusuario.")
+        return redirect("tienda:admin_usuarios")
+    if request.method == "POST":
+        nombre = usuario.username
+        usuario.delete()
+        messages.success(request, f"Usuario «{nombre}» eliminado. Sus pedidos quedan como Invitado.")
+        return redirect("tienda:admin_usuarios")
+    return render(request, "eliminar_usuario.html", {"usuario": usuario})

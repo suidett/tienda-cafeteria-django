@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User  # el modelo de usuario que trae Django
 
 
@@ -21,7 +22,7 @@ class Producto(models.Model):
     """Un producto que vende la cafetería (un café, un postre, un sándwich...)."""
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True)
-    precio = models.DecimalField(max_digits = 8, decimal_places=2)
+    precio = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(1)])
 
     categoria = models.ForeignKey(
         Categoria,
@@ -55,11 +56,18 @@ class Pedido(models.Model):
         RETIRO = "retiro", "Retiro en local"
         DELIVERY = "delivery", "Delivery"
 
+    class ModoPago(models.TextChoices):
+        ONLINE = "online", "Pagado online (Mercado Pago)"
+        LOCAL = "local", "Pago al retirar"
+
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="pedidos")
     estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.PENDIENTE)
     tipo_entrega = models.CharField(max_length=20, choices=TipoEntrega.choices, default=TipoEntrega.RETIRO)
     direccion_entrega = models.CharField(max_length=255, blank=True)
     telefono = models.CharField(max_length=20, blank=True)
+    nombre_contacto = models.CharField(max_length=120, blank=True)
+    hora_retiro = models.CharField(max_length=40, blank=True)
+    modo_pago = models.CharField(max_length=10, choices=ModoPago.choices, default=ModoPago.LOCAL)
     notas = models.TextField(blank=True, help_text="Observaciones del cliente")
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)

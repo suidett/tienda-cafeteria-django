@@ -17,3 +17,7 @@ __pycache__/
 # Django — la base la dejamos incluida para la entrega (tiene datos + usuarios de prueba).
 # Si NO querés subirla, descomentá la línea de abajo:
 # db.sqlite3
+
+# Archivos temporales de SQLite en modo WAL (NO se suben)
+db.sqlite3-wal
+db.sqlite3-shm

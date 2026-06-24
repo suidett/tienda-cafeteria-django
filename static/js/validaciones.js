@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
     const forms = document.querySelectorAll("form.form-render");
     forms.forEach(function (form) {
+        let enviando = false;
         form.addEventListener("submit", function (e) {
             let hayError = false;
             form.querySelectorAll("[required]").forEach(function (campo) {
@@ -46,7 +47,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     campo.style.border = "";
                 }
             });
-            if (hayError) e.preventDefault();   // no envía si falta algo
+            if (hayError) {
+                e.preventDefault();   // no envía si falta algo
+                return;
+            }
+            if (enviando) {
+                e.preventDefault();   // ya se envió: evita doble click / pedido duplicado
+                return;
+            }
+            enviando = true;
+            setTimeout(function () {
+                form.querySelectorAll("button[type=submit]").forEach(function (b) {
+                    b.disabled = true;
+                });
+            }, 0);
         });
     });
 });

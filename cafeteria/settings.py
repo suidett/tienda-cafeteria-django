@@ -79,6 +79,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        # Mejora de concurrencia para SQLite:
+        # - WAL (Write-Ahead Logging): permite leer mientras se escribe, menos bloqueos.
+        # - timeout: espera hasta 20s por el lock antes de fallar (en vez de los 5s por defecto).
+        'OPTIONS': {
+            'timeout': 20,
+            'init_command': 'PRAGMA journal_mode=WAL;',
+        },
     }
 }
 

@@ -344,11 +344,52 @@ a:hover {
     display: block;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
 }
-.menu-btn {
+/* Acciones del header (botones de auth + hamburguesa) agrupadas arriba-derecha */
+.header-actions {
     position: fixed;
     top: 0.9rem;
     right: 1rem;
     z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Botones de Ingresar / Registrarse en el header */
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 46px;
+    padding: 0 1.15rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.header-btn--ghost {
+    background: rgba(16, 10, 6, 0.55);
+    color: var(--cream-light);
+}
+.header-btn--ghost:hover {
+    background: rgba(16, 10, 6, 0.78);
+    color: var(--accent);
+}
+.header-btn--solid {
+    background: var(--accent);
+    color: var(--noir);
+}
+.header-btn--solid:hover {
+    background: var(--accent-deep);
+    color: #fff;
+}
+
+.menu-btn {
     width: 46px;
     height: 46px;
     display: flex;
@@ -361,6 +402,7 @@ a:hover {
     border: none;
     border-radius: 999px;
     cursor: pointer;
+    flex-shrink: 0;
 }
 .menu-btn span {
     display: block;
@@ -368,6 +410,19 @@ a:hover {
     height: 2px;
     background: var(--cream-light);
     border-radius: 2px;
+}
+
+/* En celular: achico logo, botones y hamburguesa para que no se amontonen */
+@media (max-width: 480px) {
+    .brand-mark img { height: 44px; }
+    .header-actions { gap: 0.35rem; }
+    .header-btn {
+        height: 40px;
+        padding: 0 0.8rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.03em;
+    }
+    .menu-btn { width: 40px; height: 40px; }
 }
 
 /* Overlay a pantalla completa */
@@ -674,3 +729,328 @@ main.container { padding-top: 3.5rem; }
     text-align: right;
     flex-shrink: 0;
 }
+
+/* ============================================================
+   Checkout estilo "Tu pedido" (mockup)
+   ============================================================ */
+.checkout-wrap { max-width: 540px; margin: 0 auto; }
+.checkout-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    color: var(--coffee-dark);
+    margin: 0 0 1.5rem;
+}
+.checkout-guest {
+    background: var(--cream-light);
+    border: 1px solid var(--cream-warm);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+.checkout-items { list-style: none; padding: 0; margin: 0; }
+.checkout-item {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(31, 20, 16, 0.12);
+}
+.checkout-item__info { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; }
+.checkout-item__name {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--coffee-dark);
+}
+.checkout-item__qty { font-size: 0.8rem; color: var(--coffee); }
+.checkout-item__price {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--coffee-dark);
+    white-space: nowrap;
+}
+.checkout-item__remove {
+    color: var(--coffee);
+    text-decoration: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    padding: 0 0.2rem;
+}
+.checkout-item__remove:hover { color: var(--hot); }
+.checkout-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-top: 2px solid var(--accent);
+    margin: 1.2rem 0 2rem;
+    padding-top: 1rem;
+}
+.checkout-total span {
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.85rem;
+    color: var(--coffee);
+}
+.checkout-total strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 2.1rem;
+    color: var(--coffee-dark);
+}
+.checkout-field { margin-bottom: 1.1rem; }
+.checkout-field label {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    color: var(--coffee);
+    margin-bottom: 0.4rem;
+}
+.checkout-error { color: var(--hot); font-size: 0.8rem; margin-top: 0.3rem; }
+.checkout-btn {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 1rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.8rem;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.checkout-btn--pay { background: var(--coffee-dark); color: var(--cream-light); }
+.checkout-btn--pay:hover { background: var(--noir); }
+.checkout-btn--reserve {
+    background: transparent;
+    color: var(--coffee-dark);
+    border: 1.5px solid var(--coffee-dark);
+}
+.checkout-btn--reserve:hover { background: var(--coffee-dark); color: var(--cream-light); }
+.checkout-note {
+    margin-top: 1.5rem;
+    font-size: 0.82rem;
+    color: var(--coffee);
+    line-height: 1.6;
+}
+.checkout-note em { font-style: italic; font-weight: 600; color: var(--coffee-dark); }
+
+/* ===== Detalle de pedido en el panel admin (expandible) ===== */
+.pedido-grupo { border-bottom: 2px solid var(--cream-warm); }
+.pedido-detalle-cell { padding: 0 0.5rem 1rem !important; border-top: none !important; }
+.pedido-detalle-cell summary {
+    cursor: pointer;
+    color: var(--accent-deep);
+    font-weight: 700;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.pedido-detalle {
+    margin-top: 0.8rem;
+    padding: 1rem 1.2rem;
+    background: var(--cream-light);
+    border-radius: 10px;
+}
+.pedido-detalle__items { list-style: none; margin: 0 0 0.9rem; padding: 0; }
+.pedido-detalle__items li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0;
+    border-bottom: 1px dashed rgba(31, 20, 16, 0.15);
+    font-size: 0.9rem;
+}
+.pedido-detalle__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--coffee-dark);
+}
+.pedido-detalle__notas { margin: 0.8rem 0 0; font-size: 0.85rem; color: var(--coffee-dark); }
+
+/* ============================================================
+   Mis pedidos — tarjetas de historial
+   ============================================================ */
+.pedidos-wrap { max-width: 720px; margin: 0 auto; }
+.pedidos-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    color: var(--coffee-dark);
+    margin: 0 0 2rem;
+}
+.pedido-card {
+    background: var(--cream-light);
+    border: 1px solid var(--cream-warm);
+    border-radius: 16px;
+    padding: 1.5rem 1.6rem;
+    margin-bottom: 1.3rem;
+    box-shadow: 0 12px 26px -20px rgba(31, 20, 16, 0.4);
+}
+.pedido-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+}
+.pedido-card__id {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+    color: var(--coffee-dark);
+    margin: 0;
+}
+.pedido-card__date {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--coffee);
+    margin: 0.2rem 0 0;
+}
+.estado-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+.estado-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.estado-badge--pendiente      { background: #e6dfcc; color: #7c6646; }
+.estado-badge--en_preparacion { background: #f2e6cd; color: var(--accent-deep); }
+.estado-badge--listo          { background: #e4ecd6; color: var(--forest-deep); }
+.estado-badge--entregado      { background: #dcd4c6; color: var(--coffee-dark); }
+.estado-badge--cancelado      { background: #f1ddd3; color: #a8431f; }
+.pedido-card__items {
+    list-style: none;
+    padding: 1.1rem 0;
+    margin: 1rem 0 0;
+    border-top: 1px solid rgba(31, 20, 16, 0.1);
+    border-bottom: 1px solid rgba(31, 20, 16, 0.1);
+}
+.pedido-card__items li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.35rem 0;
+}
+.pedido-card__qty {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--accent-deep);
+    min-width: 1.8rem;
+}
+.pedido-card__name {
+    flex: 1;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1.02rem;
+    color: var(--coffee-dark);
+}
+.pedido-card__price {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--coffee-dark);
+    white-space: nowrap;
+}
+.pedido-card__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.1rem;
+}
+.pedido-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.pedido-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: var(--cream);
+    border: 1px solid var(--cream-warm);
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--coffee);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.pedido-tag--online { background: #e4ecd6; border-color: #cdd9b4; color: var(--forest-deep); }
+.pedido-card__total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.pedido-card__total span {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--coffee);
+}
+.pedido-card__total strong {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: var(--coffee-dark);
+    line-height: 1.1;
+}
+.pedidos-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--coffee);
+}
+.pedidos-empty p { margin-bottom: 1.2rem; font-size: 1.05rem; }
+
+/* ===== Panel de usuarios: badges de rol y estado ===== */
+.rol-badge {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.rol-badge--admin   { background: #f2e6cd; color: var(--accent-deep); }
+.rol-badge--cliente { background: var(--cream-warm); color: var(--coffee); }
+.estado-dot { font-size: 0.82rem; font-weight: 600; }
+.estado-dot--on  { color: var(--forest-deep); }
+.estado-dot--off { color: #a8431f; }

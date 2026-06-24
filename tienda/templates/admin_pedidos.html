@@ -12,11 +12,11 @@
     <thead>
         <tr><th>#</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th></tr>
     </thead>
-    <tbody>
-        {% for pedido in pedidos %}
+    {% for pedido in pedidos %}
+    <tbody class="pedido-grupo">
         <tr>
             <td>{{ pedido.id }}</td>
-            <td>{{ pedido.usuario.username|default:"Invitado" }}</td>
+            <td>{% if pedido.nombre_contacto %}{{ pedido.nombre_contacto }}{% elif pedido.usuario %}{{ pedido.usuario.username }}{% else %}Invitado{% endif %}</td>
             <td>{{ pedido.creado|date:"d/m/Y H:i" }}</td>
             <td class="producto-precio">${{ pedido.total }}</td>
             <td>
@@ -32,9 +32,33 @@
                 </form>
             </td>
         </tr>
-        {% empty %}
-        <tr><td colspan="5" class="text-center text-muted py-4">No hay pedidos todavía.</td></tr>
-        {% endfor %}
+        <tr>
+            <td colspan="5" class="pedido-detalle-cell">
+                <details>
+                    <summary>Ver detalle</summary>
+                    <div class="pedido-detalle">
+                        <ul class="pedido-detalle__items">
+                            {% for d in pedido.detalles.all %}
+                                <li><span>{{ d.cantidad }}× {{ d.producto.nombre }}</span><span>${{ d.subtotal }}</span></li>
+                            {% endfor %}
+                        </ul>
+                        <div class="pedido-detalle__meta">
+                            <span><strong>Teléfono:</strong> {{ pedido.telefono|default:"—" }}</span>
+                            <span><strong>Retiro:</strong> {{ pedido.hora_retiro|default:"—" }}</span>
+                            <span><strong>Pago:</strong> {{ pedido.get_modo_pago_display }}</span>
+                        </div>
+                        {% if pedido.notas %}
+                            <p class="pedido-detalle__notas"><strong>Notas:</strong> {{ pedido.notas }}</p>
+                        {% endif %}
+                    </div>
+                </details>
+            </td>
+        </tr>
     </tbody>
+    {% empty %}
+    <tbody>
+        <tr><td colspan="5" class="text-center text-muted py-4">No hay pedidos todavía.</td></tr>
+    </tbody>
+    {% endfor %}
 </table>
 {% endblock %}
