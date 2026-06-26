@@ -64,8 +64,15 @@ class CheckoutForm(forms.ModelForm):
     def clean_telefono(self):
         telefono = self.cleaned_data["telefono"]
         digitos = re.sub(r"\D", "", telefono)
-        if len(digitos) < 8:
-            raise forms.ValidationError("Ingresá un teléfono válido (mínimo 8 dígitos).")
+
+        # Si lo escriben con código de país (+56), lo sacamos para validar el número nacional
+        if digitos.startswith("56"):
+            digitos = digitos[2:]
+
+        # Celular chileno: 9 dígitos que empiezan con 9
+        if len(digitos) != 9 or not digitos.startswith("9"):
+            raise forms.ValidationError("Ingresá un celular chileno válido: +56 9 XXXX XXXX.")
+
         return telefono
 
 class CategoriaForm(forms.ModelForm):
