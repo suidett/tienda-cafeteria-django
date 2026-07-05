@@ -110,8 +110,4 @@ DJANGO/
 - `DetallePedido` guarda el `precio_unitario` al momento de la compra, para que el
   historial no cambie si después se modifica el precio del producto.
 
-## Documentación adicional
-- **GUIA.md** — mapa "quiero cambiar X → tocá este archivo".
-- **DEFENSA.md** — preguntas probables de la defensa con el código exacto del cambio.
-- **COMANDOS.md** — comandos de Django y Git del día a día.
-- **INFORME_TECNICO.md** — documento técnico del proyecto (estructura APA).
+
